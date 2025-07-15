@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class newsModel {
+public class news {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long newsId;

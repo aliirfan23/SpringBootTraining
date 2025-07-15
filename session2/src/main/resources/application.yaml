@@ -1,15 +1,18 @@
 spring:
+  profiles:
+    active: local
   h2:
     console:
       enabled: true
   datasource:
-    url: jdbc:h2:mem:news
+    url: ${url}
     username: test
     password: test
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 logging:
   level:
     sql: debug
+    root: info
