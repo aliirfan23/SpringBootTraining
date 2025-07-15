@@ -19,12 +19,14 @@ public class newsController {
     public ResponseEntity<newsModel> createNews(@RequestBody newsModel newsModel) {
         newsModel insertedNews = newsService.insert(newsModel);
         return new ResponseEntity<>(insertedNews, HttpStatus.CREATED);
+
     }
 
 //    @GetMapping
 //    public ResponseEntity<List<newsModel>> getByTitle() {
 //        return new ResponseEntity<>(newsService.findAll(), HttpStatus.OK);
 //    }
+
 
     @GetMapping
     public ResponseEntity<List<newsModel>> getByTitleStartingWith(String title) {
