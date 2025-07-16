@@ -13,7 +13,6 @@ import java.util.Optional;
 @Service
 public class newsService {
 
-    private static final Logger log = LoggerFactory.getLogger(newsService.class);
     private final newsRepository newsRepository;
 
     public newsService(newsRepository newsRepository) {
