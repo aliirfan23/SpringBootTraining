@@ -50,7 +50,7 @@ public class newsController {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handle(NoSuchElementException e) {
         log.warn("News not found: {}", e.getMessage(), e);
         return Map.of("issue", e.getMessage());

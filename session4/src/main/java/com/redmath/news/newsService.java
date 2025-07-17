@@ -47,7 +47,9 @@ public class newsService {
         Optional<News> existing = newsRepository.findById(newsId);
         if (existing.isPresent()) {
             existing.get().setTitle(news.getTitle());
+            existing.get().setReportedBy(news.getReportedBy());
             existing.get().setDetails(news.getDetails());
+            existing.get().setReportedAt(news.getReportedAt());
 
         }
         return Optional.of(newsRepository.save(existing.get()));
