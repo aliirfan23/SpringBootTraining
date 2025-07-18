@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: local
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: ${Db.url}
+    username: ${Db.username}
+    password: ${Db.password}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+logging:
+  level:
+    sql: debug

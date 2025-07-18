@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db.changelog-news.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-users.yaml
+      relativeToChangelogFile: true
