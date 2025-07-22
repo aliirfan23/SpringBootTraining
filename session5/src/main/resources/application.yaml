@@ -15,3 +15,7 @@ spring:
 logging:
   level:
     sql: debug
+    security: trace
+jwt:
+  signing:
+    key: 12345678900123456789012345678912
