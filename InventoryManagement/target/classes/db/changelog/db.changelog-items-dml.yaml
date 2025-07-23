@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: data-0.0.2
+      author: items team
+      changes:
+        - insert:
+            tableName: items
+            columns:
+              - column:
+                  name: item_id
+                  value: '123'
+              - column:
+                  name: name
+                  value: Sample Item
+              - column:
+                  name: price
+                  value: '999.99'
+              - column:
+                  name: supplier
+                  value: Supplier A
+              - column:
+                  name: status
+                  value: Available
+              - column:
+                  name: created_at
+                  value: '2024-01-01T10:00:00'
+              - column:
+                  name: updated_at
+                  value: '2024-01-01T10:00:00'

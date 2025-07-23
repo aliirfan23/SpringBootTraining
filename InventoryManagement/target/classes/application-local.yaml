@@ -1,0 +1,4 @@
+Db:
+  url: jdbc:h2:mem:items
+  username: test
+  password: test
