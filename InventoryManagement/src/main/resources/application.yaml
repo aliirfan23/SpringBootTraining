@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: local
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: ${Db.url}
+    username: ${Db.username}
+    password: ${Db.password}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+logging:
+  level:
+    sql: debug
+jwt:
+  signing:
+    key: 12345678900123456789012345678912

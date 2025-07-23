@@ -29,7 +29,7 @@ public class newsService {
         return news;
     }
     public List<News> findByTitleStartingWith(String title){
-        String newsList=newsRepository.findByTitleStartingWith(title).getFirst().getTitle();
+        String newsList= newsRepository.findByTitleStartingWith(title).toString();
 
         log.info("news {}",newsList);
         return newsRepository.findByTitleStartingWith(title);

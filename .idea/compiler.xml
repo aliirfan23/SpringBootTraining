@@ -9,7 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="session1" />
       </profile>
-      <profile name="Annotation profile for session5" enabled="true">
+      <profile name="Annotation profile for InventoryManagement" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -20,11 +20,13 @@
         <module name="session4" />
         <module name="session3" />
         <module name="session2" />
+        <module name="InventoryManagement" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="InventoryManagement" options="-parameters" />
       <module name="session1" options="-parameters" />
       <module name="session2" options="-parameters" />
       <module name="session3" options="-parameters" />

@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: data-lecture-be-03
+      author: news team
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  value: '123'
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: '{noop}admin123'
+              - column:
+                  name: roles
+                  value: admin
+              - column:
+                  name: created_at
+                  value: '2000-01-01T12:00:00'
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  value: '456'
+              - column:
+                  name: username
+                  value: reporter
+              - column:
+                  name: password
+                  value: '{noop}admin123'
+              - column:
+                  name: roles
+                  value: reporter
+              - column:
+                  name: created_at
+                  value: '2000-01-01T12:00:00'
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  value: '789'
+              - column:
+                  name: username
+                  value: editor
+              - column:
+                  name: password
+                  value: '{noop}admin123'
+              - column:
+                  name: roles
+                  value: editor
+              - column:
+                  name: created_at
+                  value: '2000-01-01T12:00:00'
