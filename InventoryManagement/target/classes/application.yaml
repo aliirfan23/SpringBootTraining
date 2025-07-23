@@ -12,9 +12,17 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
+      
 logging:
   level:
     sql: debug
+
 jwt:
   signing:
     key: 12345678900123456789012345678912
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

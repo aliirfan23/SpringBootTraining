@@ -103,6 +103,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(config -> config
                 .requestMatchers("/error", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/item").hasRole("ADMIN")
+                .requestMatchers("/actuator/**").permitAll()
 //                .requestMatchers("/api/v1/**").hasRole("ADMIN")
                 .requestMatchers("/h2-console/**","/login").permitAll()
                 .anyRequest().authenticated());

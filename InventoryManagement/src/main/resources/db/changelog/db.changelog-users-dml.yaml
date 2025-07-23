@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: data-lecture-be-03
-      author: news team
+      id: proj v1
+      author: dev team
       changes:
         - insert:
             tableName: users
