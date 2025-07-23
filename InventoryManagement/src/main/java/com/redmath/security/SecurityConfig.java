@@ -66,25 +66,47 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UsersService userService, JwtEncoder jwtEncoder)
             throws Exception {
-        http.formLogin(config -> config.successHandler((request, response, auth) -> {
-            long expirySeconds = 3600;
-            JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                    .subject(auth.getName())
-                    .expiresAt(Instant.now().plusSeconds(expirySeconds))
-                    .claim("roles", auth.getAuthorities().stream()
-                    .map(a -> a.getAuthority().replace("ROLE_", ""))
-                    .toList())
-                    .build();
-            Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
-            String tokenResponse = "{\"token_type\":\"Bearer\",\"access_token\":\"" + jwt.getTokenValue()
-                    + "\",\"expires_in\":" + expirySeconds + "}";
-            response.getWriter().print(tokenResponse.formatted());
-        }));
+//        http.formLogin(config -> config.successHandler((request, response, auth) -> {
+//            long expirySeconds = 3600;
+//            JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+//            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+//                    .subject(auth.getName())
+//                    .expiresAt(Instant.now().plusSeconds(expirySeconds))
+//                    .claim("roles", auth.getAuthorities().stream()
+//                    .map(a -> a.getAuthority().replace("ROLE_", ""))
+//                    .toList())
+//                    .build();
+//            Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
+//            String tokenResponse = "{\"token_type\":\"Bearer\",\"access_token\":\"" + jwt.getTokenValue()
+//                    + "\",\"expires_in\":" + expirySeconds + "}";
+//            response.getWriter().print(tokenResponse.formatted());
+//        }));
+//        http.oauth2Login(oauth2 -> oauth2
+//                .userInfoEndpoint(userInfo -> userInfo
+//                        .userService(customOAuth2UserService))
+//        );
+//        http.oauth2Login(oauth2 -> oauth2
+//                .loginPage("/oauth2/authorization/google")
+//                .defaultSuccessUrl("/swagger-ui/index.html", true)
+//                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+//        );
+        http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/oauth2/authorization/google")
+                .defaultSuccessUrl("/swagger-ui/index.html", true)
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+        );
+
+
+
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             List<String> roles = jwt.getClaimAsStringList("roles");
