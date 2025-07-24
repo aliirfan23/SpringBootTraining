@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OAuthConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">InventoryManagement</a> &gt; <a href="index.source.html" class="el_package">com.redmath.security</a> &gt; <span class="el_source">OAuthConfig.java</span></div><h1>OAuthConfig.java</h1><pre class="source lang-java linenums">package com.redmath.security;
+
+
+import com.redmath.user.Users;
+import com.redmath.user.UsersRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+
+<span class="fc" id="L22">@Slf4j</span>
+@Service
+public class OAuthConfig implements OAuth2UserService&lt;OAuth2UserRequest, OAuth2User&gt; {
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+<span class="fc" id="L29">    public OAuthConfig() {</span>
+<span class="fc" id="L30">        System.out.println(&quot;✅ OAuthConfig constructor initialized&quot;);</span>
+<span class="fc" id="L31">    }</span>
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+<span class="nc" id="L35">        System.out.println(&quot;✅ OAuthConfig LOADUSER initialized&quot;);</span>
+
+        // Load user from Google
+<span class="nc" id="L38">        OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);</span>
+<span class="nc" id="L39">        String email = oauth2User.getAttribute(&quot;email&quot;);</span>
+<span class="nc" id="L40">        String name = oauth2User.getAttribute(&quot;name&quot;);</span>
+
+<span class="nc" id="L42">        System.out.println(&quot;Processing OAuth user: &quot; + email);</span>
+
+<span class="nc" id="L44">        Users user = usersRepository.findByUsername(email).orElseGet(() -&gt; {</span>
+<span class="nc" id="L45">            Users newUser = new Users();</span>
+<span class="nc" id="L46">            newUser.setUserId(System.currentTimeMillis());</span>
+<span class="nc" id="L47">            newUser.setUsername(email);</span>
+<span class="nc" id="L48">            newUser.setPassword(&quot;N/A&quot;); // Placeholder for OAuth users</span>
+<span class="nc" id="L49">            newUser.setRoles(&quot;USER&quot;); // Default role</span>
+<span class="nc" id="L50">            newUser.setCreatedAt(LocalDateTime.now());</span>
+<span class="nc" id="L51">            return usersRepository.save(newUser);</span>
+        });
+
+        // Extract roles from database
+<span class="nc" id="L55">        String role = &quot;ROLE_&quot; + user.getRoles().toUpperCase();</span>
+
+
+<span class="nc" id="L58">        List&lt;GrantedAuthority&gt; authorities = List.of(new SimpleGrantedAuthority(role));</span>
+<span class="nc" id="L59">        return new DefaultOAuth2User(authorities, oauth2User.getAttributes(), &quot;email&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
