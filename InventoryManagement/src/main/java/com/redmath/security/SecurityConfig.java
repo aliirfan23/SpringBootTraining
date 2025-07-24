@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -28,85 +29,54 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//@Slf4j
-//@Configuration
-//@EnableWebSecurity
-//public class SecurityConfig {
-//
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        log.info("Configuring security filter chain");
-//        http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()));
-//        return http
-//                .authorizeHttpRequests(auth -> auth
-//
-//                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
-//                        .requestMatchers("/api/v1/news/**").hasRole("REPORTER")
-//                        .requestMatchers(  "/api/v1/{newsId}").hasRole("ADMIN")
-//
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin(Customizer.withDefaults())
-//                .httpBasic(Customizer.withDefaults())
-//                .csrf(csrf -> csrf
-//                        .ignoringRequestMatchers(PathRequest.toH2Console()) //Disable CSRF for H2 Console
-//                )
-//                .headers(headers -> headers
-//                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) //Allow H2 in frames
-//                )
-
-////                .headers(headers -> headers.disable())
-//                .build();
-//
-//    }
-//}
 @OpenAPIDefinition(info = @Info(title = "Inventory API", version = "v1"), security = @SecurityRequirement(name = "bearerAuth"))
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
-    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuthConfig oAuthConfig;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
-        this.customOAuth2UserService = customOAuth2UserService;
+    public SecurityConfig(OAuthConfig oAuthConfig) {
+        this.oAuthConfig = oAuthConfig;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UsersService userService, JwtEncoder jwtEncoder)
-            throws Exception {
-//        http.formLogin(config -> config.successHandler((request, response, auth) -> {
-//            long expirySeconds = 3600;
-//            JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-//            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-//                    .subject(auth.getName())
-//                    .expiresAt(Instant.now().plusSeconds(expirySeconds))
-//                    .claim("roles", auth.getAuthorities().stream()
-//                    .map(a -> a.getAuthority().replace("ROLE_", ""))
-//                    .toList())
-//                    .build();
-//            Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
-//            String tokenResponse = "{\"token_type\":\"Bearer\",\"access_token\":\"" + jwt.getTokenValue()
-//                    + "\",\"expires_in\":" + expirySeconds + "}";
-//            response.getWriter().print(tokenResponse.formatted());
-//        }));
-//        http.oauth2Login(oauth2 -> oauth2
-//                .userInfoEndpoint(userInfo -> userInfo
-//                        .userService(customOAuth2UserService))
-//        );
-//        http.oauth2Login(oauth2 -> oauth2
-//                .loginPage("/oauth2/authorization/google")
-//                .defaultSuccessUrl("/swagger-ui/index.html", true)
-//                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-//        );
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtEncoder jwtEncoder) throws Exception {
+        // Configure OAuth2 login with custom user service
         http.oauth2Login(oauth2 -> oauth2
-                .loginPage("/oauth2/authorization/google")
-                .defaultSuccessUrl("/swagger-ui/index.html", true)
-                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-        );
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(this.oAuthConfig)
+                )
+                .successHandler((request, response, authentication) -> {
+                    long expirySeconds = 3600;
+                    JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+
+                    List<String> roles = authentication.getAuthorities().stream()
+                            .map(a -> a.getAuthority().replace("ROLE_", ""))
+                            .toList();
+
+                    JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                            .subject(authentication.getName())
+                            .expiresAt(Instant.now().plusSeconds(expirySeconds))
+                            .claim("roles", roles)
+                            .build();
+
+                    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
+
+                    String tokenResponse = String.format(
+                            "{\"token_type\":\"Bearer\",\"access_token\":\"%s\",\"expires_in\":%d}",
+                            jwt.getTokenValue(),
+                            expirySeconds
+                    );
+
+                    response.setContentType("application/json");
+                    response.getWriter().print(tokenResponse);
+                })
 
 
-
+        )
+        .logout(LogoutConfigurer::deleteCookies);
+        // JWT conversion setup
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             List<String> roles = jwt.getClaimAsStringList("roles");
@@ -114,38 +84,58 @@ public class SecurityConfig {
                     .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
                     .collect(Collectors.toList());
         });
+
         http.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(converter)));
-//        http.oauth2ResourceServer(config -> config.jwt(jwtConfig -> jwtConfig.jwtAuthenticationConverter(jwt -> {
-//            UserDetails user = userService.loadUserByUsername(jwt.getSubject());
-//            return new JwtAuthenticationToken(jwt, user.getAuthorities());
-//        })));
 
+        // Session and endpoint configuration
         http.sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         http.authorizeHttpRequests(config -> config
-                .requestMatchers("/error", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers(
+                        "/error",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/login/oauth2/code/**",  // Allow OAuth2 callback
+                        "/oauth2/authorization/google",  // Allow OAuth2 initiation
+                        "/login",  // Allow login endpoint
+                        "/login/oauth2/code/google", // Google callback
+                        "/favicon.ico" // Browser requests
+                ).permitAll()
                 .requestMatchers("/item").hasRole("ADMIN")
                 .requestMatchers("/actuator/**").permitAll()
-//                .requestMatchers("/api/v1/**").hasRole("ADMIN")
-                .requestMatchers("/h2-console/**","/login").permitAll()
-                .anyRequest().authenticated());
-        http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(PathRequest.toH2Console()))  //Disable CSRF for H2 Console
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/login")); //Disable CSRF for login endpoint
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated()
+        );
+
+        // CSRF configuration
+        http.csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                .ignoringRequestMatchers(PathRequest.toH2Console())
+                .ignoringRequestMatchers("/login/oauth2/code/**")
+                .ignoringRequestMatchers("/oauth2/authorization/google")
+                .ignoringRequestMatchers(
+                        "/login/oauth2/code/google",
+                        "/favicon.ico"
+                )
+
+        );
+
         http.headers(headers -> headers
-                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)); //Allow H2 in frames
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+        );
+
         return http.build();
     }
 
     @Bean
     public JwtEncoder jwtEncoder(@Value("${jwt.signing.key}") byte[] signingKey) {
-        return new NimbusJwtEncoder(new ImmutableSecret<>(new SecretKeySpec(signingKey, "RSA")));
+        return new NimbusJwtEncoder(new ImmutableSecret<>(new SecretKeySpec(signingKey, "HMACSHA256")));
     }
+
     @Bean
     public JwtDecoder jwtDecoder(@Value("${jwt.signing.key}") byte[] signingKey) {
-        return NimbusJwtDecoder.withSecretKey(new SecretKeySpec(signingKey, "RSA")).build();
+        return NimbusJwtDecoder.withSecretKey(new SecretKeySpec(signingKey, "HMACSHA256")).build();
     }
 }
