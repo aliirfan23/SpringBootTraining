@@ -1,9 +1,0 @@
-GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-InventoryManagement,com.redmath.items,Items,0,3,0,0,0,1,0,1,0,1
-InventoryManagement,com.redmath.items,ItemsService,0,83,4,4,0,18,4,7,0,7
-InventoryManagement,com.redmath.items,ItemsController,0,47,0,0,0,12,0,8,0,8
-InventoryManagement,com.redmath.user,Users,3,0,0,0,1,0,1,0,1,0
-InventoryManagement,com.redmath.user,UsersService,33,10,0,0,7,4,2,2,2,2
-InventoryManagement,com.redmath.security,SecurityConfig,264,40,0,0,47,9,14,5,14,5
-InventoryManagement,com.redmath.security,OAuthConfig,78,10,0,0,16,4,2,2,2,2
-InventoryManagement,com.redmath,Application,6,3,0,0,2,1,1,1,1,1

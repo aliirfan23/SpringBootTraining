@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +44,6 @@ public class OAuthConfig implements OAuth2UserService<OAuth2UserRequest, OAuth2U
 
         Users user = usersRepository.findByUsername(email).orElseGet(() -> {
             Users newUser = new Users();
-            newUser.setUserId(System.currentTimeMillis());
             newUser.setUsername(email);
             newUser.setPassword("N/A"); // Placeholder for OAuth users
             newUser.setRoles("USER"); // Default role
