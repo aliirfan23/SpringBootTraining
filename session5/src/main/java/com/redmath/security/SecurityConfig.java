@@ -133,4 +133,9 @@ public class SecurityConfig {
     public JwtDecoder jwtDecoder(@Value("${jwt.signing.key}") byte[] signingKey) {
         return NimbusJwtDecoder.withSecretKey(new SecretKeySpec(signingKey, "RSA")).build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
