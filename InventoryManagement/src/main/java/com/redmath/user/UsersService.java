@@ -17,12 +17,16 @@ import java.util.Optional;
 @Service
 public class UsersService implements UserDetailsService {
     final UsersRepository usersRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+    public UsersService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
-        this.passwordEncoder = passwordEncoder;
     }
+//    private final PasswordEncoder passwordEncoder;
+
+//    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+//        this.usersRepository = usersRepository;
+//        this.passwordEncoder = passwordEncoder;
+//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,17 +41,17 @@ public class UsersService implements UserDetailsService {
         );
     }
 
-    public Users createUser(String username, String rawPassword, String role) {
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-
-        Users user = new Users();
-        user.setUsername(username);
-        user.setPassword(encodedPassword); // Store encoded password
-        user.setRoles(role);
-        user.setCreatedAt(LocalDateTime.now());
-
-        return usersRepository.save(user);
-    }
+//    public Users createUser(String username, String rawPassword, String role) {
+//        String encodedPassword = passwordEncoder.encode(rawPassword);
+//
+//        Users user = new Users();
+//        user.setUsername(username);
+//        user.setPassword(encodedPassword); // Store encoded password
+//        user.setRoles(role);
+//        user.setCreatedAt(LocalDateTime.now());
+//
+//        return usersRepository.save(user);
+//    }
     public List<Users> findAll() {
         return usersRepository.findAll();
     }
@@ -56,16 +60,22 @@ public class UsersService implements UserDetailsService {
     }
 
     public Users create(Users user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
-        return usersRepository.save(user);
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Users newUser = new Users();
+        newUser.setUsername(user.getUsername());
+        newUser.setPassword(user.getPassword());
+        newUser.setCreatedAt(LocalDateTime.now());
+        return usersRepository.save(newUser);
     }
     public Users update(Long id, Users updatedUser) {
         return usersRepository.findById(id).map(user -> {
             if (updatedUser.getUsername() != null) user.setUsername(updatedUser.getUsername());
             if (updatedUser.getRoles() != null) user.setRoles(updatedUser.getRoles());
+//            if (updatedUser.getPassword() != null) {
+//                user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+//            }
             if (updatedUser.getPassword() != null) {
-                user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                user.setPassword(updatedUser.getPassword());
             }
             return usersRepository.save(user);
         }).orElse(null);
