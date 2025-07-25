@@ -14,7 +14,7 @@ databaseChangeLog:
                   value: admin
               - column:
                   name: password
-                  value: '{noop}admin123'
+                  value: '$2a$12$sFndiuNl9Xe4GL2oI9gqOeYFEkE5Q4rRngdZIG16Vab3zS/6DnSKG'
               - column:
                   name: roles
                   value: admin
@@ -32,7 +32,7 @@ databaseChangeLog:
                   value: reporter
               - column:
                   name: password
-                  value: '{noop}admin123'
+                  value: '$2a$12$sFndiuNl9Xe4GL2oI9gqOeYFEkE5Q4rRngdZIG16Vab3zS/6DnSKG'
               - column:
                   name: roles
                   value: reporter
@@ -50,7 +50,7 @@ databaseChangeLog:
                   value: editor
               - column:
                   name: password
-                  value: '{noop}admin123'
+                  value: '$2a$12$sFndiuNl9Xe4GL2oI9gqOeYFEkE5Q4rRngdZIG16Vab3zS/6DnSKG'
               - column:
                   name: roles
                   value: editor
