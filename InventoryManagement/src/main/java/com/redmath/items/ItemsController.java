@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.EntityResponse;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Map;
@@ -17,9 +19,25 @@ import java.util.NoSuchElementException;
 @RequestMapping("/items")
 public class ItemsController {
     private final ItemsService itemsService;
+    private final JwtDecoder jwtDecoder;
 
-    public ItemsController(ItemsService itemsService) {
+    public ItemsController(ItemsService itemsService, JwtDecoder jwtDecoder) {
         this.itemsService = itemsService;
+        this.jwtDecoder = jwtDecoder;
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> getItemWithUserInfo(@RequestHeader("Authorization") String jwtHeader) {
+        String token = jwtHeader.substring(jwtHeader.indexOf(" ") + 1);
+        Jwt jwt = jwtDecoder.decode(token);
+
+        String username = jwt.getSubject(); // comes from "sub"
+        List<String> roles = jwt.getClaimAsStringList("roles");
+
+        return ResponseEntity.ok(Map.of(
+                "username", username,
+                "roles", roles
+        ));
     }
 
     @GetMapping

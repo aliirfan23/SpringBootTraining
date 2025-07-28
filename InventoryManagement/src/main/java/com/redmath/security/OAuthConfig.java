@@ -28,19 +28,19 @@ public class OAuthConfig implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     private UsersRepository usersRepository;
 
     public OAuthConfig() {
-        System.out.println("✅ OAuthConfig constructor initialized");
+        log.info("✅ OAuthConfig initialized");
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("✅ OAuthConfig LOADUSER initialized");
+        log.info("Loading user from OAuth2 provider: {}", userRequest.getClientRegistration().getRegistrationId());
 
         // Load user from Google
         OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
 
-        System.out.println("Processing OAuth user: " + email);
+        log.info("OAuth2 user email: {}", email);
 
         Users user = usersRepository.findByUsername(email).orElseGet(() -> {
             Users newUser = new Users();

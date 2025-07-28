@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,55 +47,24 @@ public class SecurityConfig2 {
     @Bean
     @Profile("!test") // Apply this configuration only when the "test" profile is not active
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtEncoder jwtEncoder) throws Exception {
-        http.formLogin(config -> config.successHandler((request, response, auth) -> {
-            long expirySeconds = 3600;
-            JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                    .subject(auth.getName())
-                    .expiresAt(Instant.now().plusSeconds(expirySeconds))
-                    .claim("roles", auth.getAuthorities().stream()
-                            .map(a -> a.getAuthority().replace("ROLE_", ""))
-                            .toList())
-                    .build();
-            Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
-            String tokenResponse = "{\"token_type\":\"Bearer\",\"access_token\":\"" + jwt.getTokenValue()
-                    + "\",\"expires_in\":" + expirySeconds + "}";
-            response.getWriter().print(tokenResponse.formatted());
+
+        http.formLogin(config -> config.successHandler((request,
+                                                        response, auth) -> {
+            generateJwtTokenResponse(response, auth, jwtEncoder);
         }));
+
         // Configure OAuth2 login with custom user service
         http.oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo
-                        .userService(this.oAuthConfig)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(this.oAuthConfig)
+                        )
+                        .successHandler((request, response, authentication) -> {
+                            generateJwtTokenResponse(response, authentication, jwtEncoder);
+                        })
                 )
-                .successHandler((request, response, authentication) -> {
-                    long expirySeconds = 3600;
-                    JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-
-                    List<String> roles = authentication.getAuthorities().stream()
-                            .map(a -> a.getAuthority().replace("ROLE_", ""))
-                            .toList();
-
-                    JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                            .subject(authentication.getName())
-                            .expiresAt(Instant.now().plusSeconds(expirySeconds))
-                            .claim("roles", roles)
-                            .build();
-
-                    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
-
-                    String tokenResponse = String.format(
-                            "{\"token_type\":\"Bearer\",\"access_token\":\"%s\",\"expires_in\":%d}",
-                            jwt.getTokenValue(),
-                            expirySeconds
-                    );
-
-                    response.setContentType("application/json");
-                    response.getWriter().print(tokenResponse);
-                })
+                .logout(LogoutConfigurer::deleteCookies);
 
 
-        )
-        .logout(LogoutConfigurer::deleteCookies);
         // JWT conversion setup
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
@@ -118,12 +89,10 @@ public class SecurityConfig2 {
                         "/oauth2/authorization/google",  // Allow OAuth2 initiation
                         "/login",  // Allow login endpoint
                         "/login/oauth2/code/google", // Google callback
-                        "/favicon.ico" // Browser requests
+                        "/favicon.ico", // Browser requests
+                        "/actuator/**",
+                        "/h2-console/**"
                 ).permitAll()
-//                .requestMatchers("/items").permitAll()
-//                .requestMatchers("/items/**").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
         );
 
@@ -132,13 +101,8 @@ public class SecurityConfig2 {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 .ignoringRequestMatchers(PathRequest.toH2Console())
-                .ignoringRequestMatchers("/login/oauth2/code/**","/login")
-                .ignoringRequestMatchers("/oauth2/authorization/google")
-                .ignoringRequestMatchers(
-                        "/login/oauth2/code/google",
-                        "/favicon.ico"
-                )
-
+                .ignoringRequestMatchers("/login/oauth2/code/**","/login","/oauth2/authorization/google")
+                .ignoringRequestMatchers("/login/oauth2/code/google", "/favicon.ico")
         );
 
         http.headers(headers -> headers
@@ -146,6 +110,36 @@ public class SecurityConfig2 {
         );
 
         return http.build();
+    }
+    private void generateJwtTokenResponse(HttpServletResponse response, Authentication authentication, JwtEncoder jwtEncoder) {
+        try {
+            long expirySeconds = 3600;
+            JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+
+            List<String> roles = authentication.getAuthorities().stream()
+                    .map(a -> a.getAuthority().replace("ROLE_", ""))
+                    .toList();
+
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .subject(authentication.getName())
+                    .expiresAt(Instant.now().plusSeconds(expirySeconds))
+                    .claim("roles", roles)
+                    .build();
+
+            Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
+
+            String tokenResponse = String.format(
+                    "{\"token_type\":\"Bearer\",\"access_token\":\"%s\",\"expires_in\":%d}",
+                    jwt.getTokenValue(),
+                    expirySeconds
+            );
+
+            response.setContentType("application/json");
+            response.getWriter().print(tokenResponse);
+        } catch (Exception e) {
+            // Handle exception appropriately
+            throw new RuntimeException("Failed to generate JWT token response", e);
+        }
     }
 
     @Bean
