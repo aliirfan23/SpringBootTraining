@@ -38,7 +38,6 @@ public class OAuthConfig implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         // Load user from Google
         OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
         String email = oauth2User.getAttribute("email");
-        String name = oauth2User.getAttribute("name");
 
         log.info("OAuth2 user email: {}", email);
 

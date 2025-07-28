@@ -69,4 +69,53 @@ public class ItemsController {
         log.warn("Item not found: {}", e.getMessage(), e);
         return Map.of("issue", e.getMessage());
     }
+
+    // Stock inward endpoint
+    @PostMapping("/{id}/inward")
+    public ResponseEntity<?> stockInward(
+            @PathVariable Long id,
+            @RequestParam("quantity") int quantity) {
+        try {
+            Items updatedItem = itemsService.stockInward(id, quantity);
+            return ResponseEntity.ok(updatedItem);
+        } catch (NoSuchElementException e) {
+            return handleItemNotFound(e);
+        }
+    }
+
+    // Stock outward endpoint
+    @PostMapping("/{id}/outward")
+    public ResponseEntity<?> stockOutward(
+            @PathVariable Long id,
+            @RequestParam("quantity") int quantity) {
+        try {
+            Items updatedItem = itemsService.stockOutward(id, quantity);
+            return ResponseEntity.ok(updatedItem);
+        } catch (NoSuchElementException e) {
+            return handleItemNotFound(e);
+        } catch (ExceptionUtility e) {
+            log.warn("Insufficient stock: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // Stock report endpoint
+    @GetMapping("/stock-report")
+    public ResponseEntity<List<Items>> getStockReport() {
+        return ResponseEntity.ok(itemsService.getStockReport());
+    }
+
+    private ResponseEntity<Map<String, String>> handleItemNotFound(NoSuchElementException e) {
+        log.warn("Item not found: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+    }
+
+    // Add new exception handler
+    @ExceptionHandler(ExceptionUtility.class)
+    public ResponseEntity<?> handleInsufficientStock(ExceptionUtility e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+    }
 }

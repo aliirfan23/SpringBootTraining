@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -42,5 +43,32 @@ public class ItemsService {
 
     public void deleteItem(Long id) {
         itemsRepository.deleteById(id);
+    }
+
+    public Items stockInward(Long id, int quantity) {
+        Items item = itemsRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Item not found with id: " + id));
+        item.setQuantity(item.getQuantity() + quantity);
+        item.setUpdatedAt(LocalDateTime.now());
+        return itemsRepository.save(item);
+    }
+
+    public Items stockOutward(Long id, int quantity) {
+        Items item = itemsRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Item not found with id: " + id));
+
+        if (item.getQuantity() < quantity) {
+            throw new ExceptionUtility(
+                    "Insufficient stock. Available: " + item.getQuantity() + ", Requested: " + quantity
+            );
+        }
+
+        item.setQuantity(item.getQuantity() - quantity);
+        item.setUpdatedAt(LocalDateTime.now());
+        return itemsRepository.save(item);
+    }
+
+    public List<Items> getStockReport() {
+        return itemsRepository.findAll();
     }
 }

@@ -23,11 +23,11 @@ public class ItemsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
+    private static Long createdItemId=1L;
+    private static Long newCreatedItemId=1L; // This will be set after the first test
 
-    private static Long createdItemId;
 
     @Test
     @Order(1)
@@ -51,18 +51,20 @@ public class ItemsControllerTest {
 
         String response = result.getResponse().getContentAsString();
         Items createdItem = objectMapper.readValue(response, Items.class);
-        createdItemId = createdItem.getItemId(); // Save the ID for later use
+        newCreatedItemId = createdItem.getItemId(); // Save the ID for later use
     }
 
     @Test
     @Order(2)
     public void testGetItemByIdSuccess() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/items/" + 123).with(csrf()))
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/" + newCreatedItemId).with(csrf()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.itemId", Matchers.is(123)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.price", Matchers.is(999.99)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Sample Item")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.itemId", Matchers.is(newCreatedItemId.intValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price", Matchers.is(499.99)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.supplier", Matchers.is("Supplier X")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("Available")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Test Item")));
     }
 
     @Test
@@ -91,7 +93,7 @@ public class ItemsControllerTest {
         updatedItem.setSupplier("Supplier Y");
         updatedItem.setStatus("Out of Stock");
 
-        mockMvc.perform(MockMvcRequestBuilders.patch("/items/123").with(csrf())
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/"+createdItemId).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedItem)))
                 .andDo(MockMvcResultHandlers.print())
@@ -120,7 +122,7 @@ public class ItemsControllerTest {
     @Test
     @Order(7)
     public void testDeleteItemSuccess() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/items/123").with(csrf()))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/items/"+createdItemId).with(csrf()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }

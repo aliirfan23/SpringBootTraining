@@ -7,17 +7,17 @@ databaseChangeLog:
             tableName: items
             columns:
               - column:
-                  name: item_id
-                  value: '123'
-              - column:
                   name: name
-                  value: Sample Item
+                  value: Apc Ups
               - column:
                   name: price
-                  value: '999.99'
+                  value: '40000.00'
+              - column:
+                  name: quantity
+                  value: '20'
               - column:
                   name: supplier
-                  value: Supplier A
+                  value: APC Supplier Official
               - column:
                   name: status
                   value: Available
@@ -27,3 +27,51 @@ databaseChangeLog:
               - column:
                   name: updated_at
                   value: '2024-01-01T10:00:00'
+        - insert:
+            tableName: items
+            columns:
+              - column:
+                  name: name
+                  value: Logitech Mx202 Mouse
+              - column:
+                  name: price
+                  value: '2500.00'
+              - column:
+                  name: quantity
+                  value: '30'
+              - column:
+                  name: supplier
+                  value: Hafeez Center
+              - column:
+                  name: status
+                  value: Out of Stock
+              - column:
+                  name: created_at
+                  value: '2024-01-02T11:00:00'
+              - column:
+                  name: updated_at
+                  value: '2024-01-02T11:00:00'
+        - insert:
+            tableName: items
+            columns:
+              - column:
+                  name: name
+                  value: Headphones (A4Tech Ns202)
+              - column:
+                  name: price
+                  value: '4500.00'
+              - column:
+                  name: quantity
+                  value: '25'
+              - column:
+                  name: supplier
+                  value: Hafeez Center
+              - column:
+                  name: status
+                  value: Available
+              - column:
+                  name: created_at
+                  value: '2024-01-03T12:00:00'
+              - column:
+                  name: updated_at
+                  value: '2024-01-03T12:00:00'

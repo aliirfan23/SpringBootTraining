@@ -19,6 +19,9 @@ databaseChangeLog:
                   name: price
                   type: double
               - column:
+                  name: quantity
+                  type: int
+              - column:
                   name: supplier
                   type: varchar(255)
               - column:

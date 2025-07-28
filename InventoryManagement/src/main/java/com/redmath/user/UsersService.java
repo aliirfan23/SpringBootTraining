@@ -13,10 +13,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 @Slf4j
 @Service
+@SuppressWarnings("EI_EXPOSE_REP2")
 public class UsersService implements UserDetailsService {
     final UsersRepository usersRepository;
+
 
     public UsersService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;

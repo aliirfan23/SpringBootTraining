@@ -18,6 +18,7 @@ public class Items {
     private Long itemId;
     private String name;
     private Double price;
+    private int quantity;
     private String supplier;
     private String status;
     private LocalDateTime createdAt;
