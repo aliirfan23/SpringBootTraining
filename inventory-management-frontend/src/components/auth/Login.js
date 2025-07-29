@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../../services/auth';
 import OAuthButton from './OAuthButton';
 import imgLogo from './logo.png'
+import { useAuth } from '../../context/AuthContext';
 const Login = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -11,6 +12,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const { refreshAuth } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -45,7 +47,30 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+    
+//     if (!validate()) return;
+    
+//     setIsLoading(true);
+//     setLoginError('');
+    
+//     try {
+//       const success = await login(formData.username, formData.password);
+//       console.log('Login success:', success);
+//       if (success) {
+//         navigate('/dashboard');
+//       } else {
+//         setLoginError('Invalid credentials. Please try again.');
+//       }
+//     } catch (error) {
+//       setLoginError('Login failed. Please try again later.');
+//       console.error('Login error:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+    const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validate()) return;
@@ -54,8 +79,9 @@ const Login = () => {
     setLoginError('');
     
     try {
-      const success = await login(formData.username, formData.password);
-      if (success) {
+      const result = await login(formData.username, formData.password);
+      if (result.success) {
+        await refreshAuth(); // This will update the auth context
         navigate('/dashboard');
       } else {
         setLoginError('Invalid credentials. Please try again.');

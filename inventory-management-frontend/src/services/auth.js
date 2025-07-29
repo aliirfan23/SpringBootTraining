@@ -1,6 +1,25 @@
 import api from './api';
 import config from './config';
 
+// export const login = async (username, password) => {
+//   try {
+//     const response = await api.post('/login', `username=${username}&password=${password}`, {
+//       headers: {
+//         'Content-Type': 'application/x-www-form-urlencoded'
+//       }
+//     });
+    
+//     if (response.data && response.data.access_token) {
+//       localStorage.setItem('token', response.data.access_token);
+//       console.log('Login successful, token stored:', response.data.access_token);
+//       return true;
+//     }
+//     return false;
+//   } catch (error) {
+//     console.error('Login failed:', error);
+//     throw error;
+//   }
+// };
 export const login = async (username, password) => {
   try {
     const response = await api.post('/login', `username=${username}&password=${password}`, {
@@ -11,9 +30,11 @@ export const login = async (username, password) => {
     
     if (response.data && response.data.access_token) {
       localStorage.setItem('token', response.data.access_token);
-      return true;
+      // Get user info immediately after successful login
+      const userInfo = await getUserInfo();
+      return { success: true, user: userInfo };
     }
-    return false;
+    return { success: false };
   } catch (error) {
     console.error('Login failed:', error);
     throw error;
