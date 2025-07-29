@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 @EnableMethodSecurity
 @Configuration
-public class SecurityConfig2 {
+public class SecurityConfig {
     private final OAuthConfig oAuthConfig;
 
-    public SecurityConfig2(OAuthConfig oAuthConfig) {
+    public SecurityConfig(OAuthConfig oAuthConfig) {
         this.oAuthConfig = oAuthConfig;
     }
 
