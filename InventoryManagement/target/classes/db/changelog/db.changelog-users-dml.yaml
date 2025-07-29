@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: proj v1
+      author: dev team
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: '$2a$12$sFndiuNl9Xe4GL2oI9gqOeYFEkE5Q4rRngdZIG16Vab3zS/6DnSKG'
+              - column:
+                  name: roles
+                  value: admin
+              - column:
+                  name: created_at
+                  value: '2000-01-01T12:00:00'
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: reporter
+              - column:
+                  name: password
+                  value: '$2a$12$sFndiuNl9Xe4GL2oI9gqOeYFEkE5Q4rRngdZIG16Vab3zS/6DnSKG'
+              - column:
+                  name: roles
+                  value: reporter
+              - column:
+                  name: created_at
+                  value: '2000-01-01T12:00:00'
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: editor
+              - column:
+                  name: password
+                  value: '$2a$12$sFndiuNl9Xe4GL2oI9gqOeYFEkE5Q4rRngdZIG16Vab3zS/6DnSKG'
+              - column:
+                  name: roles
+                  value: editor
+              - column:
+                  name: created_at
+                  value: '2000-01-01T12:00:00'

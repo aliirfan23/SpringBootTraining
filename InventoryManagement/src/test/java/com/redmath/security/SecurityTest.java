@@ -28,6 +28,7 @@ public class SecurityTest {
 
     @Test
     public void testSuccessfulLogin() throws Exception {
+
         // Prepare form data
         String username = "admin";
         String password = "admin123";

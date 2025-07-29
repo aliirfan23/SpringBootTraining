@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: proj v1
+      author: dev team
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+              - column:
+                  name: password
+                  type: varchar(200)
+              - column:
+                  name: roles
+                  type: varchar(200)
+              - column:
+                  name: created_at
+                  type: DATETIME
+        - addPrimaryKey:
+            tableName: users
+            columnNames: user_id
+            constraintName: users_pk
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: username
+            constraintName: users_uk
+      #    - addForeignKeyConstraint:
+      #        baseTableName: news
+      #        baseColumnNames: reported_by
+      #        constraintName: news_fk
+      #        referencedTableName: users
+      #        referencedColumnNames: username
+

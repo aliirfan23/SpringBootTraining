@@ -28,7 +28,7 @@ public class OAuthConfig implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     private UsersRepository usersRepository;
 
     public OAuthConfig() {
-        log.info("✅ OAuthConfig initialized");
+        log.info("OAuthConfig initialized");
     }
 
     @Override

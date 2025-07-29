@@ -103,22 +103,6 @@ public class ItemsControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("Out of Stock")));
     }
 
-//    @Test
-//    @Order(6)
-//    public void testUpdateItemNotFound() throws Exception {
-//        Items updatedItem = new Items();
-//        updatedItem.setName("Ghost");
-//        updatedItem.setPrice(0.0);
-//        updatedItem.setSupplier("None");
-//        updatedItem.setStatus("Unavailable");
-//
-//        mockMvc.perform(MockMvcRequestBuilders.patch("/items/999999")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(updatedItem)))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andExpect(MockMvcResultMatchers.status().isNotFound());
-//    }
-
     @Test
     @Order(7)
     public void testDeleteItemSuccess() throws Exception {
@@ -127,11 +111,92 @@ public class ItemsControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-//    @Test
-//    @Order(8)
-//    public void testDeleteItemNotFound() throws Exception {
-//        mockMvc.perform(MockMvcRequestBuilders.delete("/items/999999"))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andExpect(MockMvcResultMatchers.status().isNotFound());
-//    }
+    @Test
+    @Order(10)
+    public void testStockInwardSuccess() throws Exception {
+        // Reset item to known state (quantity=20)
+        resetItem1();
+
+        int inwardQuantity = 10;
+        mockMvc.perform(MockMvcRequestBuilders.post("/items/1/inward?quantity=" + inwardQuantity).with(csrf()))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.itemId", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.is(20 + inwardQuantity)));
+    }
+
+    @Test
+    @Order(11)
+    public void testStockOutwardSuccess() throws Exception {
+        // Reset item to known state (quantity=20)
+        resetItem1();
+
+        int outwardQuantity = 5;
+        mockMvc.perform(MockMvcRequestBuilders.post("/items/1/outward?quantity=" + outwardQuantity).with(csrf()))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.itemId", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.is(20 - outwardQuantity)));
+    }
+
+    @Test
+    @Order(12)
+    public void testStockReportSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/stock-report"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(Matchers.greaterThanOrEqualTo(3))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].itemId", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("Apc Ups")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].quantity", Matchers.is(20)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].itemId", Matchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name", Matchers.is("Logitech Mx202 Mouse")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].quantity", Matchers.is(30)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].itemId", Matchers.is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].name", Matchers.is("Headphones (A4Tech Ns202)")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].quantity", Matchers.is(25)));
+    }
+
+    @Test
+    @Order(13)
+    public void testStockInwardNotFound() throws Exception {
+        long nonExistingId = 999L;
+        mockMvc.perform(MockMvcRequestBuilders.post("/items/" + nonExistingId + "/inward?quantity=10").with(csrf()))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.containsString("Item not found")));
+    }
+
+    @Test
+    @Order(14)
+    public void testStockOutwardNotFound() throws Exception {
+        long nonExistingId = 999L;
+        mockMvc.perform(MockMvcRequestBuilders.post("/items/" + nonExistingId + "/outward?quantity=5").with(csrf()))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.containsString("Item not found")));
+    }
+
+    @Test
+    @Order(15)
+    public void testStockOutwardInsufficientStock() throws Exception {
+        // Reset item to known state (quantity=20)
+        resetItem1();
+
+        int outwardQuantity = 30; // More than available
+        mockMvc.perform(MockMvcRequestBuilders.post("/items/1/outward?quantity=" + outwardQuantity).with(csrf()))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.containsString("Insufficient stock")));
+    }
+
+    // Helper method to reset item with ID=1 to its initial state
+    private void resetItem1() throws Exception {
+        String resetJson = "{\"name\":\"Apc Ups\",\"price\":40000.00,\"quantity\":20,\"supplier\":\"APC Supplier Official\",\"status\":\"Available\"}";
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/1").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(resetJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

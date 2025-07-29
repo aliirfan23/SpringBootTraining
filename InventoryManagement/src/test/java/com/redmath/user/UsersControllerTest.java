@@ -47,10 +47,6 @@ public class UsersControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("testuser")))
                 .andReturn();
-
-        String response = result.getResponse().getContentAsString();
-        Users createdUser = objectMapper.readValue(response, Users.class);
-        createdUserId = createdUser.getUserId();
     }
 
     @Test
