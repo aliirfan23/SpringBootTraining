@@ -14,16 +14,7 @@ const Dashboard = () => {
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Inventory Manager</h1>
             
-            {user && (
-              <div className="bg-white p-4 rounded-lg shadow mb-6">
-                <p className="text-gray-600 mb-2">
-                  <span className="font-medium">Username:</span> {user.username}
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-medium">Roles:</span> {user.roles && user.roles.length > 0 ? user.roles.join(', ') : 'No roles assigned'}
-                </p>
-              </div>
-            )}
+            
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">

@@ -61,8 +61,29 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(this.oAuthConfig)
                         )
+//                        .successHandler((request, response, authentication) -> {
+//                            generateJwtTokenResponse(response, authentication, jwtEncoder);
+//                            response.sendRedirect("http://localhost:3000/dashboard");
+//                        })
                         .successHandler((request, response, authentication) -> {
-                            generateJwtTokenResponse(response, authentication, jwtEncoder);
+                            long expirySeconds = 3600;
+                            JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+
+                            List<String> roles = authentication.getAuthorities().stream()
+                                    .map(a -> a.getAuthority().replace("ROLE_", ""))
+                                    .toList();
+
+                            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                                    .subject(authentication.getName())
+                                    .expiresAt(Instant.now().plusSeconds(expirySeconds))
+                                    .claim("roles", roles)
+                                    .build();
+
+                            Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
+
+                            // Redirect with token
+                            String redirectUrl = String.format("http://localhost:3000/oauth-callback?token=%s", jwt.getTokenValue());
+                            response.sendRedirect(redirectUrl);
                         })
                 )
                 .logout(LogoutConfigurer::deleteCookies);
