@@ -3,8 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
+import InventoryPage from "./pages/InventoryPage"
 import OAuthCallback from './components/auth/OAuthCallback';
 import './index.css';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -24,18 +27,27 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route 
+      {/* <Route 
         path="/dashboard" 
         element={
           <PrivateRoute>
             <Dashboard />
           </PrivateRoute>
         } 
+      /> */}
+      <Route 
+        path="/inventory" 
+        element={
+          <PrivateRoute>
+            <InventoryPage />
+          </PrivateRoute>
+        }
       />
       <Route path="/oauth-callback" element={<OAuthCallback />} />
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/inventory" replace />} />
+
+      <Route path="*" element={<Navigate to="/inventory" replace />} />
     </Routes>
   );
 };
@@ -44,7 +56,9 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <Header />
         <AppRoutes />
+        <Footer />
       </Router>
     </AuthProvider>
   );

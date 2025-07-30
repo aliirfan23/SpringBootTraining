@@ -1,51 +1,44 @@
 import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
+// import InventoryManager from './inventory/InventoryManager';
+// import StockInward from './inventory/StockInward';
+// import StockOutward from './inventory/StockOutward';
+// import StockReports from './reports/StockReports';
+// import UserManagement from './admin/UserManagement';
 
 const Dashboard = () => {
   const { user } = useAuth();
 
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-container">
-      <Header />
+    <div className="min-h-screen bg-gray-50">
+      <Sidebar user={user} />
+      <Header user={user} />
       
-      <main className="dashboard-main">
-        <div className="container mx-auto px-4 py-6">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Inventory Manager</h1>
-            
-            
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="w-16 h-16 bg-gray-200 border-2 border-dashed rounded-xl mx-auto"></div>
-                <h3 className="mt-4 text-lg font-medium text-gray-800 text-center">Manage Items</h3>
-                <p className="mt-2 text-gray-600 text-center">View and manage your inventory items</p>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="w-16 h-16 bg-gray-200 border-2 border-dashed rounded-xl mx-auto"></div>
-                <h3 className="mt-4 text-lg font-medium text-gray-800 text-center">Stock Reports</h3>
-                <p className="mt-2 text-gray-600 text-center">Generate detailed stock reports</p>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="w-16 h-16 bg-gray-200 border-2 border-dashed rounded-xl mx-auto"></div>
-                <h3 className="mt-4 text-lg font-medium text-gray-800 text-center">User Management</h3>
-                <p className="mt-2 text-gray-600 text-center">Manage users and permissions</p>
-              </div>
-            </div>
-          </div>
+      <main className="ml-64 pt-16 min-h-screen">
+        <div className="p-6">
+          {/* <Routes>
+            <Route path="/inventory" element={<InventoryManager />} />
+            <Route path="/stock-inward" element={<StockInward />} />
+            <Route path="/stock-outward" element={<StockOutward />} />
+            <Route path="/reports" element={<StockReports />} />
+            {user?.roles?.includes('ADMIN') && (
+              <Route path="/users" element={<UserManagement />} />
+            )}
+            <Route path="/" element={<Navigate to="/inventory" replace />} />
+          </Routes> */}
         </div>
       </main>
-      
-      <footer className="dashboard-footer">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-gray-500 text-sm">
-            &copy; 2023 Inventory Manager. All rights reserved.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

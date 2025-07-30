@@ -1,0 +1,118 @@
+.header-accent-bar {
+  background-color: #2563eb; /* Tailwind blue-600 */
+  color: white;
+  height: 4rem; 
+  display: flex;
+  /* justify-content: flex-end; */
+  align-items: center;
+  padding: 0 1rem; /* px-4 */
+  position: fixed;
+  top: 0;
+  left: 0; /* left-64 */
+  right: 0;
+  /* z-index: 20; */
+}
+
+.header-main {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  height: 4rem; /* h-16 */
+  position: fixed;
+  top: 2rem; /* top-8 (after accent bar) */
+  left: 16rem; /* left-64 */
+  right: 0;
+  z-index: 10;
+}
+
+.header-content {
+  height: 100%;
+  padding: 0 1.5rem; /* px-6 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600; /* font-semibold */
+  color: #1f2937; /* Tailwind gray-800 */
+}
+
+.header-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space-x-4 */
+}
+
+.user-text {
+  text-align: right;
+}
+
+.username {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #111827; /* gray-900 */
+}
+
+.user-roles {
+  font-size: 0.75rem; /* text-xs */
+  color: #6b7280; /* gray-500 */
+}
+
+.user-avatar {
+  width: 2rem;
+  height: 2rem;
+  background-color: #dbeafe; /* blue-100 */
+  color: #2563eb; /* blue-600 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; /* full */
+}
+
+.login-link {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background-color: #2563eb;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
+
+.logout-btn {
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: black;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+  align-content: flex-end;
+}
+
+.logout-btn:hover {
+  background: rgba(250, 36, 36, 0.734);
+  color: white;
+}
+
+.logo-text{
+    font-size: 1.6rem; /* text-xl */
+    font-weight: 600; /* font-semibold */
+    color: white; 
+    margin-left: 0.5rem; /* ml-2 */
+}
+.logo-image {
+    height: 40px; 
+    width: 40px; 
+  align-items: center;
+}

@@ -16,6 +16,7 @@ export const handleOAuthCallback = async (fullUrl) => {
     if (data.access_token) {
       localStorage.setItem('token', data.access_token);
       const userInfo = await getUserInfo();
+      console.log('User info:', userInfo);
       return { success: true, user: userInfo };
     }
     return { success: false };

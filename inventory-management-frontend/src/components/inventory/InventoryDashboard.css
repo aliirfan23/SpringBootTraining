@@ -1,0 +1,97 @@
+.inventory-dashboard {
+  padding-top: 50px;
+  min-height: 100vh;
+  background-color: rgb(255, 255, 255);
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  /* margin-left: 250px; Adjust based on your sidebar width */
+}
+
+.content-header {
+  margin-bottom: 30px;
+}
+
+.content-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+ 
+}
+.logout-btn {
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+ 
+}
+
+.logout-btn:hover {
+  background: rgba(250, 36, 36, 0.734);
+  color: white;
+}
+
+.tab-btn:hover {
+  background: #a3aedf;
+  color: #333;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: white;
+  /* box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); */
+}
+
+.content-body {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 15px;
+  }
+
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+}

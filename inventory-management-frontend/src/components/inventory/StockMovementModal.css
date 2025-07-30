@@ -1,0 +1,65 @@
+.stock-item-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.stock-item-info h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.stock-item-info p {
+  margin: 0 0 8px 0;
+  color: #666;
+}
+
+.stock-item-info p:last-child {
+  margin-bottom: 0;
+}
+
+.stock-item-info strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.stock-preview {
+  background: #e3f2fd;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  margin-top: 16px;
+}
+
+.stock-preview p {
+  margin: 0;
+  color: #1565c0;
+  font-weight: 500;
+}
+
+.stock-preview strong {
+  font-weight: 600;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #218838;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #212529;
+  border: none;
+}
+
+.btn-warning:hover {
+  background: #e0a800;
+}
