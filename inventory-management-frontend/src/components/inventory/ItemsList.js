@@ -8,7 +8,7 @@ import Loader from "../ui/Loader"
 import AddEditItemModal from "./AddEditItemModal"
 import "./ItemsList.css"
 
-const ItemsList = ({ items, loading, onStockMovement, onRefresh, onAddItem }) => {
+const ItemsList = ({ items, loading, onStockMovement, onRefresh, onAddItem, user }) => {
   const [filteredItems, setFilteredItems] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [showEditModal, setShowEditModal] = useState(false)
@@ -76,18 +76,17 @@ const ItemsList = ({ items, loading, onStockMovement, onRefresh, onAddItem }) =>
           <p>Manage your inventory items and stock levels</p>
         </div>
         <div className="header-right" >
-          <div className="search-container ">
-            <Input
+            <input
               type="text"
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
+            
             />
-          </div>
-          <Button onClick={onAddItem} className="btn-primary">
+          <button onClick={onAddItem} disabled={!user?.roles?.includes("ADMIN")} className="add-item-button">
             ➕ Add Item
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -143,13 +142,17 @@ const ItemsList = ({ items, loading, onStockMovement, onRefresh, onAddItem }) =>
                       >
                         ➖
                       </button>
-                      <button className="action-btn btn-primary" onClick={() => handleEdit(item)} title="Edit Item">
+                      <button disabled={!user?.roles?.includes("ADMIN")}
+                        className="action-btn btn-primary" 
+                        onClick={() => handleEdit(item)} 
+                        title="Edit Item">
                         ✏️
                       </button>
                       <button
                         className="action-btn btn-danger"
                         onClick={() => handleDelete(item.itemId)}
                         title="Delete Item"
+                        disabled={!user?.roles?.includes("ADMIN")}
                       >
                         🗑️
                       </button>

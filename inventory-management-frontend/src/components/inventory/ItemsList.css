@@ -30,11 +30,21 @@
 
 .search-container {
    height: max-content;
+   align-content: center;
+   
 }
 
 .search-input {
-  width: 300px;
-  padding-left: 40px;
+  
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+  
 }
 
  
@@ -210,7 +220,21 @@
   background: #dc3545;
   color: white;
 }
-
+.add-item-button{
+    padding: 10px 20px;
+    border: none;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+    border: 1px solid #333;
+}
+.add-item-button:hover{
+  background: #b3b6b8;
+  color: black;
+}
 @media (max-width: 768px) {
   .items-header {
     flex-direction: column;

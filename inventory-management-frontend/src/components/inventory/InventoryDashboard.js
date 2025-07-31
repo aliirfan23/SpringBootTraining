@@ -1,5 +1,6 @@
 "use client"
-
+import React from "react"
+import { getUserInfo } from "../../services/auth"
 import { useState, useEffect } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { inventoryApi } from "../../services/inventoryApi"
@@ -12,6 +13,7 @@ import "./InventoryDashboard.css"
 import Button from "../ui/Button"
 import { logout } from "../../services/auth"
 
+
 const handleLogout = async () => {
     try {
       await logout();
@@ -22,7 +24,6 @@ const handleLogout = async () => {
   };
 
 const InventoryDashboard = () => {
-  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState("dashboard")
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -36,6 +37,20 @@ const InventoryDashboard = () => {
     totalValue: 0,
     outOfStockItems: 0,
   })
+  const [user, setUser] = React.useState(null);
+  
+  React.useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await getUserInfo();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   useEffect(() => {
     fetchItems()
@@ -89,7 +104,7 @@ const InventoryDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return <DashboardStats stats={stats} onAddItem={() => setShowAddModal(true)} />
+        return <DashboardStats stats={stats} onAddItem={() => setShowAddModal(true)} user={user} />
       case "items":
         return (
           <ItemsList
@@ -98,6 +113,7 @@ const InventoryDashboard = () => {
             onStockMovement={handleStockMovement}
             onRefresh={fetchItems}
             onAddItem={() => setShowAddModal(true)}
+            user={user}
           />
         )
       case "reports":
@@ -114,7 +130,6 @@ const InventoryDashboard = () => {
         {/* <Sidebar /> */}
         <main className="main-content">
           <div className="content-header">
-            {/* <h1>Inventory Management</h1> */}
             <div className="tab-navigation">
               <button
                 className={`tab-btn ${activeTab === "dashboard" ? "active" : ""}`}
@@ -134,7 +149,7 @@ const InventoryDashboard = () => {
               >
                 Reports
               </button>
-              <button className={`logout-btn ${activeTab === "" ? "active" : "logout"}`}
+              <button className={`logout-button`}
                       onClick={handleLogout}>
                 Logout
               </button>

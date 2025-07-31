@@ -38,8 +38,8 @@ export const login = async (username, password) => {
     if (response.data && response.data.access_token) {
       localStorage.setItem('token', response.data.access_token);
       // Get user info immediately after successful login
-      const userInfo = await getUserInfo();
-      return { success: true, user: userInfo };
+      // const userInfo = await getUserInfo();
+      return { success: true };
     }
     return { success: false };
   } catch (error) {

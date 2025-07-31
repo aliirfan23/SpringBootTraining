@@ -9,7 +9,7 @@ const Button = ({
   disabled = false,
   type = 'button'
 }) => {
-  const baseClasses = "rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseClasses = "rounded-md font-medium hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
   
   const variantClasses = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500",

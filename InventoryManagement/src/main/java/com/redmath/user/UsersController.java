@@ -45,7 +45,9 @@ public class UsersController {
         if (updated != null) {
             return ResponseEntity.ok(updated);
         }
-        return ResponseEntity.notFound().build();
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -54,6 +56,14 @@ public class UsersController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/del/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        if (usersService.delete(id)) {
+            return ResponseEntity.ok().build();
+        }
+        throw new NoSuchElementException("User not found with id: " + id);
     }
 
     @ExceptionHandler(NoSuchElementException.class)

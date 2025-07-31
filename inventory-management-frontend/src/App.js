@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
 import InventoryPage from "./pages/InventoryPage"
 import OAuthCallback from './components/auth/OAuthCallback';
 import './index.css';

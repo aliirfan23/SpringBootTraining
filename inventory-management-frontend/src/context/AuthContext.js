@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
       } catch (error) {
         console.error('Failed to fetch user info:', error);
-        localStorage.removeItem('token'); // Clear invalid token
+        localStorage.removeItem('token');
       }
     }
     setLoading(false);

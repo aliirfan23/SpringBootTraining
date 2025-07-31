@@ -15,6 +15,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MvcResult;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -28,6 +34,44 @@ public class ItemsControllerTest {
     private static Long createdItemId=1L;
     private static Long newCreatedItemId=1L; // This will be set after the first test
 
+    @Test
+    public void testSuccessfulLogin() throws Exception {
+
+        // Prepare form data
+        String username = "admin";
+        String password = "admin123";
+        String formData = String.format("username=%s&password=%s", username, password);
+
+        // Perform login request
+        MvcResult result = mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(formData)
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token_type").value("Bearer"))
+                .andExpect(jsonPath("$.access_token").exists())
+                .andExpect(jsonPath("$.expires_in").value(3600))
+                .andReturn();
+
+        // Print the response for debugging
+        String response = result.getResponse().getContentAsString();
+    }
+
+    @Test
+    @Order(0)
+    public void testGetUserInfoWithToken() throws Exception {
+
+        String accessToken = getAccessToken();
+
+        // Step 2: Call /info with Authorization header
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/info")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("admin"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.roles[0]").value("ADMIN")); // Adjust if more roles exist
+    }
 
     @Test
     @Order(1)
@@ -103,16 +147,9 @@ public class ItemsControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("Out of Stock")));
     }
 
-    @Test
-    @Order(7)
-    public void testDeleteItemSuccess() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/items/"+createdItemId).with(csrf()))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
 
     @Test
-    @Order(10)
+    @Order(6)
     public void testStockInwardSuccess() throws Exception {
         // Reset item to known state (quantity=20)
         resetItem1();
@@ -126,21 +163,20 @@ public class ItemsControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(7)
     public void testStockOutwardSuccess() throws Exception {
-        // Reset item to known state (quantity=20)
-        resetItem1();
+
 
         int outwardQuantity = 5;
         mockMvc.perform(MockMvcRequestBuilders.post("/items/1/outward?quantity=" + outwardQuantity).with(csrf()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.itemId", Matchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.is(20 - outwardQuantity)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", Matchers.is(30 - outwardQuantity)));
     }
 
     @Test
-    @Order(12)
+    @Order(8)
     public void testStockReportSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/items/stock-report"))
                 .andDo(MockMvcResultHandlers.print())
@@ -148,7 +184,7 @@ public class ItemsControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(Matchers.greaterThanOrEqualTo(3))))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].itemId", Matchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("Apc Ups")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].quantity", Matchers.is(20)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].quantity", Matchers.is(25)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].itemId", Matchers.is(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].name", Matchers.is("Logitech Mx202 Mouse")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].quantity", Matchers.is(30)))
@@ -158,7 +194,7 @@ public class ItemsControllerTest {
     }
 
     @Test
-    @Order(13)
+    @Order(9)
     public void testStockInwardNotFound() throws Exception {
         long nonExistingId = 999L;
         mockMvc.perform(MockMvcRequestBuilders.post("/items/" + nonExistingId + "/inward?quantity=10").with(csrf()))
@@ -168,7 +204,7 @@ public class ItemsControllerTest {
     }
 
     @Test
-    @Order(14)
+    @Order(10)
     public void testStockOutwardNotFound() throws Exception {
         long nonExistingId = 999L;
         mockMvc.perform(MockMvcRequestBuilders.post("/items/" + nonExistingId + "/outward?quantity=5").with(csrf()))
@@ -178,7 +214,7 @@ public class ItemsControllerTest {
     }
 
     @Test
-    @Order(15)
+    @Order(11)
     public void testStockOutwardInsufficientStock() throws Exception {
         // Reset item to known state (quantity=20)
         resetItem1();
@@ -189,7 +225,13 @@ public class ItemsControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.containsString("Insufficient stock")));
     }
-
+    @Test
+    @Order(12)
+    public void testDeleteItemSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/items/"+createdItemId).with(csrf()))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
     // Helper method to reset item with ID=1 to its initial state
     private void resetItem1() throws Exception {
         String resetJson = "{\"name\":\"Apc Ups\",\"price\":40000.00,\"quantity\":20,\"supplier\":\"APC Supplier Official\",\"status\":\"Available\"}";
@@ -198,5 +240,18 @@ public class ItemsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(resetJson))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+    private String getAccessToken() throws Exception {
+        String formData = "username=admin&password=admin123";
+
+        MvcResult result = mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(formData)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        return objectMapper.readTree(response).get("access_token").asText();
     }
 }

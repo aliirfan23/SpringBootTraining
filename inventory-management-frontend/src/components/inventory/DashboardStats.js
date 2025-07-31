@@ -2,7 +2,7 @@
 import Button from "../ui/Button"
 import "./DashboardStats.css"
 
-const DashboardStats = ({ stats, onAddItem }) => {
+const DashboardStats = ({ stats, onAddItem, user}) => {
   return (
     <div className="dashboard-stats">
       <div className="stats-grid">
@@ -46,10 +46,10 @@ const DashboardStats = ({ stats, onAddItem }) => {
       <div className="quick-actions">
         <h3>Quick Actions</h3>
         <div className="actions-grid">
-          <Button onClick={onAddItem} className="btn-primary">
+          <Button onClick={onAddItem} disabled={!user?.roles?.includes("ADMIN")} className="btn-primary">
             ➕ Add New Item
           </Button>
-          <Button className="btn-secondary">📊 View Reports</Button>
+          <Button disabled={!user?.roles?.includes("ADMIN")} className="btn-secondary">📊 View Reports</Button>
           <Button className="btn-secondary">📥 Import Items</Button>
           <Button className="btn-secondary">📤 Export Data</Button>
         </div>

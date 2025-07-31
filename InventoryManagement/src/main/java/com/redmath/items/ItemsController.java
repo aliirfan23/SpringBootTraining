@@ -1,15 +1,12 @@
 package com.redmath.items;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -44,6 +41,7 @@ public class ItemsController {
     public List<Items> getAllItems() {
         return itemsService.getAllItems();
     }
+
     @PostMapping
     public Items createItem(@RequestBody Items item) {
         return itemsService.createItem(item);
