@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { inventoryApi } from "../../services/inventoryApi"
-import Button from "../ui/Button"
-import Input from "../ui/Input"
 import Loader from "../ui/Loader"
 import AddEditItemModal from "./AddEditItemModal"
 import "./ItemsList.css"

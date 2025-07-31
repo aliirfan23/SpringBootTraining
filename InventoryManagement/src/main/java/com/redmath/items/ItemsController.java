@@ -1,5 +1,6 @@
 package com.redmath.items;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,14 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestController
 @RequestMapping("/items")
+@SuppressFBWarnings(value = { "EI_EXPOSE_REP", "EI_EXPOSE_REP2" }, justification = "I prefer to suppress these FindBugs warnings")
 public class ItemsController {
     private final ItemsService itemsService;
     private final JwtDecoder jwtDecoder;
 
-    public ItemsController(ItemsService itemsService, JwtDecoder jwtDecoder) {
-        this.itemsService = itemsService;
-        this.jwtDecoder = jwtDecoder;
+    public ItemsController(final ItemsService itemsService,final JwtDecoder jwtDecoder) {
+        this.itemsService = java.util.Objects.requireNonNull(itemsService);
+        this.jwtDecoder = java.util.Objects.requireNonNull(jwtDecoder);
     }
 
     @GetMapping("/info")

@@ -97,6 +97,11 @@
   background: #a3aedf;
   color: #333;
 }
+.actions-grid button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: 1fr;

@@ -235,6 +235,11 @@
   background: #b3b6b8;
   color: black;
 }
+.add-item-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
 @media (max-width: 768px) {
   .items-header {
     flex-direction: column;

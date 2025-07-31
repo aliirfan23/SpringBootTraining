@@ -2,7 +2,6 @@
 import React from "react"
 import { getUserInfo } from "../../services/auth"
 import { useState, useEffect } from "react"
-import { useAuth } from "../../context/AuthContext"
 import { inventoryApi } from "../../services/inventoryApi"
 import ItemsList from "./ItemsList"
 import StockReport from "./StockReport"
@@ -10,7 +9,6 @@ import DashboardStats from "./DashboardStats"
 import AddEditItemModal from "./AddEditItemModal"
 import StockMovementModal from "./StockMovementModal"
 import "./InventoryDashboard.css"
-import Button from "../ui/Button"
 import { logout } from "../../services/auth"
 
 
@@ -54,7 +52,7 @@ const InventoryDashboard = () => {
 
   useEffect(() => {
     fetchItems()
-  }, [])
+  })
 
   const fetchItems = async () => {
     try {

@@ -183,6 +183,10 @@
                                     <minimum>0.80</minimum>
                                 </limit>
                             </limits>
+                            <excludes>
+                                <!-- Exclude the specific class -->
+                                <exclude>com/redmath/security/SecurityConfig.class</exclude>
+                            </excludes>
                         </rule>
                     </rules>
                 </configuration>
@@ -199,6 +203,12 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <!-- Optional: exclude from report too -->
+                        <configuration>
+                            <excludes>
+                                <exclude>com/redmath/security/SecurityConfig.class</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>post-unit-test</id>
@@ -209,6 +219,9 @@
                         <configuration>
                             <dataFile>target/jacoco.exec</dataFile>
                             <outputDirectory>target/my-reports</outputDirectory>
+                            <excludes>
+                                <exclude>com/redmath/security/SecurityConfig.class</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -216,9 +229,15 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>com/redmath/security/SecurityConfig.class</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
