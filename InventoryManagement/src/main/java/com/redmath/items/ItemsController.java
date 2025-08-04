@@ -15,7 +15,6 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestController
 @RequestMapping("/items")
-@SuppressFBWarnings(value = { "EI_EXPOSE_REP", "EI_EXPOSE_REP2" }, justification = "I prefer to suppress these FindBugs warnings")
 public class ItemsController {
     private final ItemsService itemsService;
     private final JwtDecoder jwtDecoder;
