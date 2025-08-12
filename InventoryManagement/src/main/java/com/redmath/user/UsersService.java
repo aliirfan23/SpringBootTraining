@@ -20,8 +20,8 @@ public class UsersService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
-        this.usersRepository = usersRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.usersRepository = java.util.Objects.requireNonNull(usersRepository,"must not be null");
+        this.passwordEncoder = java.util.Objects.requireNonNull(passwordEncoder,"must not be null");
     }
 
     @Override

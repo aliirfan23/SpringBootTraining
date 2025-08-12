@@ -18,7 +18,7 @@ public class UsersController {
     private final UsersService usersService;
 
     public UsersController(UsersService usersService) {
-        this.usersService = usersService;
+        this.usersService = java.util.Objects.requireNonNull(usersService,"must not be null");
     }
 
     @GetMapping

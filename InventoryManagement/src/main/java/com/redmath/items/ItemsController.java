@@ -19,8 +19,8 @@ public class ItemsController {
     private final JwtDecoder jwtDecoder;
 
     public ItemsController(final ItemsService itemsService,final JwtDecoder jwtDecoder) {
-        this.itemsService = java.util.Objects.requireNonNull(itemsService);
-        this.jwtDecoder = java.util.Objects.requireNonNull(jwtDecoder);
+        this.itemsService = java.util.Objects.requireNonNull(itemsService,"must not be null");
+        this.jwtDecoder = java.util.Objects.requireNonNull(jwtDecoder,"must not be null");
     }
 
     @GetMapping("/info")
