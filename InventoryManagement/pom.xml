@@ -169,7 +169,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <!-- Optional: exclude from report too -->
                         <configuration>
                             <excludes>
                                 <exclude>com/redmath/security/SecurityConfig.class</exclude>
@@ -231,6 +230,24 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.22.0</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnViolation>true</failOnViolation>
+                    <printFailingErrors>true</printFailingErrors>
+                </configuration>
             </plugin>
 
         </plugins>
