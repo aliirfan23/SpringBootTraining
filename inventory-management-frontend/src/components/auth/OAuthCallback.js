@@ -1,10 +1,8 @@
-// src/components/auth/OAuthCallback.js
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getUserInfo } from '../../services/auth'; // Adjust the import path as necessary
+import { getUserInfo } from '../../services/auth'; 
 
-// Make sure to import getUserInfo if it exists, or define it here
 // import { getUserInfo } from 'path-to-getUserInfo';
 
 

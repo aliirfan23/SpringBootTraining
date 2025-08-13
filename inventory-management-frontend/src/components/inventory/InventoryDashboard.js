@@ -52,7 +52,7 @@ const InventoryDashboard = () => {
 
   useEffect(() => {
     fetchItems()
-  })
+  },[])
 
   const fetchItems = async () => {
     try {
@@ -60,6 +60,7 @@ const InventoryDashboard = () => {
       const response = await inventoryApi.getAllItems()
       const itemsData = response.data
       setItems(itemsData)
+      console.log("Fetched items:", itemsData)
       calculateStats(itemsData)
     } catch (error) {
       console.error("Failed to fetch items:", error)
