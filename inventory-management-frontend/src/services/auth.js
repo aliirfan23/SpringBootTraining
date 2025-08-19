@@ -37,8 +37,6 @@ export const login = async (username, password) => {
     
     if (response.data && response.data.access_token) {
       localStorage.setItem('token', response.data.access_token);
-      // Get user info immediately after successful login
-      // const userInfo = await getUserInfo();
       return { success: true };
     }
     return { success: false };
@@ -54,7 +52,8 @@ export const logout = () => {
 };
 
 export const googleLogin = () => {
-  window.location.href = `${config.API_BASE_URL}${config.GOOGLE_LOGIN_URL}`;
+  console.log('Redirecting to Google login...');
+  window.location.href = '/oauth2/authorization/google';
 };
 
 export const getUserInfo = async () => {

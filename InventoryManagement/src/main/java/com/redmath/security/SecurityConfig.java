@@ -27,9 +27,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.time.Instant;
@@ -119,14 +116,14 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
         );
-        http.cors();
+//        http.cors();
         // CSRF configuration
         http.csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 .ignoringRequestMatchers(PathRequest.toH2Console())
-                .ignoringRequestMatchers("/login/oauth2/code/**","/login","/oauth2/authorization/google")
-                .ignoringRequestMatchers("/login","/login/oauth2/code/google", "/favicon.ico")
+//                .ignoringRequestMatchers("/login/oauth2/code/**","/login","/oauth2/authorization/google")
+//                .ignoringRequestMatchers("/login","/login/oauth2/code/google")
         );
 
         http.headers(headers -> headers
@@ -165,18 +162,18 @@ public class SecurityConfig {
             throw new RuntimeException("Failed to generate JWT token response", e);
         }
     }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // your React dev server
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // important for cookies/session-based login
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // your React dev server
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
+//        configuration.setAllowedHeaders(List.of("*"));
+//        configuration.setAllowCredentials(true); // important for cookies/session-based login
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
     @Bean
     @Profile("test")
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http,JwtEncoder jwtEncoder) throws Exception {
