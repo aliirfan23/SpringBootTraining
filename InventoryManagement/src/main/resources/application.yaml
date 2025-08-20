@@ -50,3 +50,5 @@ management:
 #      endpoint: http://localhost:8082/v1/traces
 #      export:
 #        enabled: true
+redirect:
+  base: http://localhost:3000

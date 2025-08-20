@@ -35,7 +35,7 @@ public class ItemsService {
             if (updatedItem.getStatus() != null) item.setStatus(updatedItem.getStatus());
             item.setUpdatedAt(LocalDateTime.now());
             return itemsRepository.save(item);
-        }).orElse(null);
+        }).orElseThrow(() -> new NoSuchElementException("Item not found with id: " + id));
     }
 
     public void deleteItem(Long id) {

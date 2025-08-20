@@ -40,11 +40,15 @@ import java.util.stream.Collectors;
 public class SecurityConfig {
     private final OAuthConfig oAuthConfig;
 
+    @Value("${redirect.base}")
+    private String base;
+
     public SecurityConfig(OAuthConfig oAuthConfig) {
         this.oAuthConfig = oAuthConfig;
     }
 
     @Bean
+
     @Profile("!test") // Apply this configuration only when the "test" profile is not active
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtEncoder jwtEncoder) throws Exception {
 
@@ -58,10 +62,6 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(this.oAuthConfig)
                         )
-//                        .successHandler((request, response, authentication) -> {
-//                            generateJwtTokenResponse(response, authentication, jwtEncoder);
-//                            response.sendRedirect("http://localhost:3000/dashboard");
-//                        })
                         .successHandler((request, response, authentication) -> {
                             long expirySeconds = 3600;
                             JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
@@ -79,7 +79,7 @@ public class SecurityConfig {
                             Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, jwtClaimsSet));
 
                             // Redirect with token
-                            String redirectUrl = String.format("http://localhost:3000/oauth-callback?token=%s", jwt.getTokenValue());
+                            String redirectUrl = String.format(base+"/oauth-callback?token=%s", jwt.getTokenValue());
                             response.sendRedirect(redirectUrl);
                         })
                 )

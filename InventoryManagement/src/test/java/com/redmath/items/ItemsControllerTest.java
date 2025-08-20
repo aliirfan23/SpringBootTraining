@@ -146,6 +146,113 @@ public class ItemsControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.price", Matchers.is(299.99)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("Out of Stock")));
     }
+    @Test
+    @Order(5)
+    public void testUpdateItemPartialSuccess() throws Exception {
+        // Test updating only name and price
+        Items partialUpdate = new Items();
+        partialUpdate.setName("Partially Updated Item");
+        partialUpdate.setPrice(399.99);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/" + createdItemId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(partialUpdate)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Partially Updated Item")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price", Matchers.is(399.99)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("Out of Stock")));
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateItemStatusOnly() throws Exception {
+        Items statusUpdate = new Items();
+        statusUpdate.setStatus("Out of Stock");
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/" + createdItemId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(statusUpdate)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("Out of Stock")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.supplier").exists());
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateItemSupplierOnly() throws Exception {
+        Items supplierUpdate = new Items();
+        supplierUpdate.setSupplier("New Supplier");
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/" + createdItemId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(supplierUpdate)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.supplier", Matchers.is("New Supplier")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").exists());
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateItemEmptyBody() throws Exception {
+        Items emptyUpdate = new Items();
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/" + createdItemId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(emptyUpdate)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.supplier").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").exists());
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateNonExistentItem() throws Exception {
+        Items update = new Items();
+        update.setName("Updated Name");
+        update.setPrice(199.99);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/999999")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(update)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @Order(5)
+    public void testUpdateItemVerifyTimestamp() throws Exception {
+        Items update = new Items();
+        update.setName("Timestamp Test Item");
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/items/" + createdItemId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(update)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updatedAt").exists())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        Items updatedItem = objectMapper.readValue(response, Items.class);
+        Assertions.assertNotNull(updatedItem.getUpdatedAt());
+        Assertions.assertTrue(updatedItem.getUpdatedAt().isAfter(updatedItem.getCreatedAt()));
+    }
 
 
     @Test
