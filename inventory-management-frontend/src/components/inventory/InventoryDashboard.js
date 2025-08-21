@@ -38,7 +38,9 @@ const InventoryDashboard = () => {
   const [user, setUser] = React.useState(null);
   
   React.useEffect(() => {
-    const fetchUserInfo = async () => {
+    fetchUserInfo();
+  }, []);
+  const fetchUserInfo = async () => {
       try {
         const userData = await getUserInfo();
         setUser(userData);
@@ -46,10 +48,6 @@ const InventoryDashboard = () => {
         console.error('Failed to fetch user info:', error);
       }
     };
-
-    fetchUserInfo();
-  }, []);
-
   useEffect(() => {
     fetchItems()
   },[])

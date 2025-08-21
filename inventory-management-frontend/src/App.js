@@ -44,9 +44,9 @@ const AppRoutes = () => {
       />
       <Route path="/oauth-callback" element={<OAuthCallback />} />
 
-      <Route path="/" element={<Navigate to="/inventory" replace />} />
+      <Route path="/inventory" element={<Navigate to="/login" replace />} />
 
-      <Route path="*" element={<Navigate to="/inventory" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };

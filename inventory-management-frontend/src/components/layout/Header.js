@@ -1,32 +1,32 @@
-import React from 'react';
-import { getUserInfo, logout } from '../../services/auth';
+// import React from 'react';
+// import { getUserInfo, logout } from '../../services/auth';
 import './Header.css'; 
 import logo from '../ui/logo.png'; 
 
 const Header = () => {
-  const [user, setUser] = React.useState(null);
+  // const [user, setUser] = React.useState(null);
 
-  React.useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userData = await getUserInfo();
-        setUser(userData);
-      } catch (error) {
-        console.error('Failed to fetch user info:', error);
-      }
-    };
+  // React.useEffect(() => {
+  //   const fetchUserInfo = async () => {
+  //     try {
+  //       const userData = await getUserInfo();
+  //       setUser(userData);
+  //     } catch (error) {
+  //       console.error('Failed to fetch user info:', error);
+  //     }
+  //   };
 
-    fetchUserInfo();
-  }, []);
+  //   fetchUserInfo();
+  // }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await logout();
+  //     window.location.href = '/login';
+  //   } catch (error) {
+  //     console.error('Logout failed:', error);
+  //   }
+  // };
 
   return (
     <>

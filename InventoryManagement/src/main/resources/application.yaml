@@ -50,5 +50,7 @@ management:
 #      endpoint: http://localhost:8082/v1/traces
 #      export:
 #        enabled: true
+
+# dispatcher servlet for getting logs of the incoming requests
 redirect:
   base: http://localhost:3000

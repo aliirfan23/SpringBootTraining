@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../services/auth';
 import OAuthButton from './OAuthButton';
-import imgLogo from './logo.png'
+import imgLogo from '../../assets/logo.png';
 import { useAuth } from '../../context/AuthContext';
 const Login = () => {
   const [formData, setFormData] = useState({
