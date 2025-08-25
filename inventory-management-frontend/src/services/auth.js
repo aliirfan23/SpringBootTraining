@@ -69,3 +69,8 @@ export const getUserInfo = async () => {
 export const isAuthenticated = () => {
   return !!localStorage.getItem('token');
 };
+
+export async function initCsrf() {
+  // This GET will trigger Spring to set XSRF-TOKEN cookie
+  await api.get("/login", { withCredentials: true });
+}

@@ -63,7 +63,7 @@ public class SecurityConfig {
                                 .userService(this.oAuthConfig)
                         )
                         .successHandler((request, response, authentication) -> {
-                            long expirySeconds = 3600;
+                            long expirySeconds = 30;
                             JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
 
                             List<String> roles = authentication.getAuthorities().stream()
@@ -116,14 +116,10 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
         );
-//        http.cors();
-        // CSRF configuration
         http.csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 .ignoringRequestMatchers(PathRequest.toH2Console())
-//                .ignoringRequestMatchers("/login/oauth2/code/**","/login","/oauth2/authorization/google")
-//                .ignoringRequestMatchers("/login","/login/oauth2/code/google")
         );
 
         http.headers(headers -> headers
@@ -134,7 +130,7 @@ public class SecurityConfig {
     }
     private void generateJwtTokenResponse(HttpServletResponse response, Authentication authentication, JwtEncoder jwtEncoder) {
         try {
-            long expirySeconds = 3600;
+            long expirySeconds = 30;
             JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
 
             List<String> roles = authentication.getAuthorities().stream()
@@ -162,18 +158,6 @@ public class SecurityConfig {
             throw new RuntimeException("Failed to generate JWT token response", e);
         }
     }
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // your React dev server
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
-//        configuration.setAllowedHeaders(List.of("*"));
-//        configuration.setAllowCredentials(true); // important for cookies/session-based login
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
     @Bean
     @Profile("test")
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http,JwtEncoder jwtEncoder) throws Exception {
